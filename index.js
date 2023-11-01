@@ -28,7 +28,7 @@ app.use('/vouchers', voucherRouter);
 app.use('/variants', variantController);
 app.use('/transVariant', transactionVariantController);
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`listen on port:${PORT}`);
   // db.sequelize.sync({ alter: true });
 });
