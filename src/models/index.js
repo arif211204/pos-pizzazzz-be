@@ -4,24 +4,38 @@ const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
 const process = require('process');
+const { createPool } = require('mysql2/promise');
+
+const config = require(`${__dirname}/../config/config.js`);
 
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
-const config = require(`${__dirname}/../config/config.js`)[env];
+
 const db = {};
 
 let sequelize;
 if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
+  sequelize = new Sequelize(process.env[config.use_env_variable], {});
 } else {
-  sequelize = new Sequelize(
-    config.database,
-    config.username,
-    config.password,
-    config
-  );
+  sequelize = new Sequelize(config.database, config.username, config.password, {
+    dialect: process.env.MYSQL_DIALECT,
+  });
 }
 
+const mysqlConnection = createPool({
+  host: process.env.MYSQL_HOST,
+  port: process.env.PORT,
+  user: process.env.MYSQL_USER,
+  password: process.env.MYSQL_PASSWORD,
+  database: process.env.MYSQL_DATABASE,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+});
+
+db.sequelize = sequelize;
+db.Sequelize = Sequelize;
+db.mysqlConnection = mysqlConnection;
 fs.readdirSync(__dirname)
   .filter(
     (file) =>
@@ -43,8 +57,5 @@ Object.keys(db).forEach((modelName) => {
     db[modelName].associate(db);
   }
 });
-
-db.sequelize = sequelize;
-db.Sequelize = Sequelize;
 
 module.exports = db;

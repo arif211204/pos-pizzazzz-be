@@ -18,10 +18,6 @@ const db = require('./models');
 
 const PORT = process.env.PORT || 2500;
 
-// if (process.env.NODE_ENV !== 'production') {
-//   config();
-// }
-
 const app = express();
 app.use(cors());
 app.use(express.json());
