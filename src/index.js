@@ -10,9 +10,9 @@ const {
   voucherRouter,
   variantController,
   transactionVariantController,
-} = require('./src/routes');
+} = require('./routes');
 // eslint-disable-next-line no-unused-vars
-const db = require('./src/models');
+const db = require('./models');
 
 const PORT = process.env.PORT || 2500;
 
@@ -28,7 +28,7 @@ app.use('/vouchers', voucherRouter);
 app.use('/variants', variantController);
 app.use('/transVariant', transactionVariantController);
 
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, () => {
   console.log(`listen on port:${PORT}`);
   // db.sequelize.sync({ alter: true });
 });
