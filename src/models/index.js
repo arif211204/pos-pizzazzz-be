@@ -6,10 +6,9 @@ const Sequelize = require('sequelize');
 const process = require('process');
 const { createPool } = require('mysql2/promise');
 
-const config = require(`${__dirname}/../config/config.js`);
-
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
+const config = require(`${__dirname}/../config/config.js`)[env];
 
 const db = {};
 
