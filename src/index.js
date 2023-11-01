@@ -37,9 +37,9 @@ app.use('/transVariant', transactionVariantController);
 // });
 const server = http.createServer((req, res) => {
   // Handle any other HTTP requests if needed
-  res.statusCode = 404;
+  res.statusCode = 200;
   res.setHeader('Content-Type', 'text/plain');
-  res.end('Not Found');
+  res.end('hello world');
 });
 
 // Mount the Express app on the existing server
