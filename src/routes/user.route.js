@@ -8,7 +8,11 @@ const {
 } = require('../middlewares/multers');
 
 // GET users
-router.get('/', verifyUserAuth({ isAdmin: true }), userController.getUsers);
+router.get(
+  '/',
+  // verifyUserAuth({ isAdmin: true }),
+  userController.getUsers
+);
 
 // GET user by userId
 router.get(
