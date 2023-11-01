@@ -2,12 +2,29 @@ require('dotenv').config();
 
 module.exports = {
   development: {
-    use_env_variable: 'MYSQL_DATABASE_URL',
+    username: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASSWORD,
+    database: process.env.MYSQL_DATABASE,
+    host: process.env.MYSQL_HOST,
+    mysqlUrl: process.env.MYSQL_URL,
+    dialect: process.env.MYSQL_DIALECT,
+    timezone: process.env.MYSQL_TIMEZONE,
   },
   test: {
-    use_env_variable: 'TEST_DATABASE_URL',
+    username: 'root',
+    password: null,
+    database: 'database_test',
+    host: '127.0.0.1',
+    dialect: 'mysql',
   },
   production: {
-    use_env_variable: 'PRODUCTION_DATABASE_URL',
+    username: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASSWORD,
+    database: process.env.MYSQL_DATABASE,
+    host: process.env.MYSQL_HOST,
+    mysqlUrl: process.env.MYSQL_URL,
+
+    dialect: process.env.MYSQL_DIALECT,
+    timezone: process.env.MYSQL_TIMEZONE,
   },
 };
