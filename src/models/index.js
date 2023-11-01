@@ -7,10 +7,20 @@ const process = require('process');
 const { createPool } = require('mysql2/promise');
 
 const basename = path.basename(__filename);
-const env = process.env.NODE_ENV || 'production';
+const env = process.env.NODE_ENV || 'development';
 const config = require(`${__dirname}/../config/config.js`)[env];
 
 const db = {};
+const mysqlConnection = createPool({
+  host: process.env.MYSQL_HOST,
+  port: process.env.PORT,
+  user: process.env.MYSQL_USER,
+  password: process.env.MYSQL_PASSWORD,
+  database: process.env.MYSQL_DATABASE,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+});
 
 let sequelize;
 if (config.use_env_variable) {
@@ -20,17 +30,6 @@ if (config.use_env_variable) {
     dialect: process.env.MYSQL_DIALECT,
   });
 }
-
-const mysqlConnection = createPool({
-  host: process.env.MYSQL_HOST,
-  port: process.env.MYSQL_USER,
-  user: process.env.MYSQL_USER,
-  password: process.env.MYSQL_PASSWORD,
-  database: process.env.MYSQL_DATABASE,
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-});
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;

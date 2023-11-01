@@ -6,7 +6,6 @@ module.exports = {
     password: process.env.MYSQL_PASSWORD,
     database: process.env.MYSQL_DATABASE,
     host: process.env.MYSQL_HOST,
-    mysqlUrl: process.env.MYSQL_URL,
     dialect: process.env.MYSQL_DIALECT,
     timezone: process.env.MYSQL_TIMEZONE,
   },
@@ -22,8 +21,6 @@ module.exports = {
     password: process.env.MYSQL_PASSWORD,
     database: process.env.MYSQL_DATABASE,
     host: process.env.MYSQL_HOST,
-    mysqlUrl: process.env.MYSQL_URL,
-
     dialect: process.env.MYSQL_DIALECT,
     timezone: process.env.MYSQL_TIMEZONE,
   },
