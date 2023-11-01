@@ -10,9 +10,9 @@ const {
   voucherRouter,
   variantController,
   transactionVariantController,
-} = require('./routes');
+} = require('./src/routes');
 // eslint-disable-next-line no-unused-vars
-const db = require('./models');
+const db = require('./src/models');
 
 const PORT = process.env.PORT || 2500;
 
