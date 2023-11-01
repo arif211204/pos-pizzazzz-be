@@ -31,10 +31,10 @@ app.use('/variants', variantController);
 app.use('/transVariant', transactionVariantController);
 
 const server = http.createServer(app);
-app.listen(PORT, () => {
-  console.log(`listen on port:${PORT}`);
-  // db.sequelize.sync({ alter: true });
-});
+// app.listen(PORT, () => {
+//   console.log(`listen on port:${PORT}`);
+//   // db.sequelize.sync({ alter: true });
+// });
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
