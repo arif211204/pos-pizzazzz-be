@@ -2,6 +2,7 @@ require('dotenv').config();
 const cors = require('cors');
 const express = require('express');
 const bearerToken = require('express-bearer-token');
+const mysql = require('mysql');
 // const http = require('http');
 
 const {
@@ -17,6 +18,17 @@ const {
 const db = require('./models');
 
 const PORT = process.env.PORT || 2500;
+
+const options = {
+  host: 'localhost',
+  port: 3306,
+  user: 'root',
+  password: 'password',
+  database: 'my_database',
+  timeout: 10000, // 10 seconds
+};
+const connection = mysql.createConnection(options);
+connection.connect();
 
 const app = express();
 app.use(cors());
