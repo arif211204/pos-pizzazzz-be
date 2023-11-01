@@ -12,19 +12,6 @@ const config = require(`${__dirname}/../config/config.js`)[env];
 
 const db = {};
 
-// Create the MySQL connection pool.
-const mysqlConnection = createPool({
-  host: process.env.MYSQL_HOST,
-  port: process.env.MYSQL_PORT,
-  user: process.env.MYSQL_USER,
-  password: process.env.MYSQL_PASSWORD,
-  database: process.env.MYSQL_DATABASE,
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-});
-
-// Initialize the Sequelize instance.
 let sequelize;
 if (config.use_env_variable) {
   sequelize = new Sequelize(process.env[config.use_env_variable], {});
@@ -34,10 +21,20 @@ if (config.use_env_variable) {
   });
 }
 
-// Add the MySQL connection pool to the Sequelize instance.
-db.mysqlConnection = mysqlConnection;
+const mysqlConnection = createPool({
+  host: process.env.MYSQL_HOST,
+  port: process.env.MYSQL_USER,
+  user: process.env.MYSQL_USER,
+  password: process.env.MYSQL_PASSWORD,
+  database: process.env.MYSQL_DATABASE,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+});
 
-// Load the models.
+db.sequelize = sequelize;
+db.Sequelize = Sequelize;
+db.mysqlConnection = mysqlConnection;
 fs.readdirSync(__dirname)
   .filter(
     (file) =>
@@ -54,7 +51,6 @@ fs.readdirSync(__dirname)
     db[model.name] = model;
   });
 
-// Associate the models.
 Object.keys(db).forEach((modelName) => {
   if (db[modelName].associate) {
     db[modelName].associate(db);
