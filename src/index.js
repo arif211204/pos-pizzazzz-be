@@ -30,16 +30,11 @@ app.use('/vouchers', voucherRouter);
 app.use('/variants', variantController);
 app.use('/transVariant', transactionVariantController);
 
-// const server = http.createServer(app);
+const server = http.createServer(app);
 // app.listen(PORT, () => {
 //   console.log(`listen on port:${PORT}`);
 //   // db.sequelize.sync({ alter: true });
 // });
-const server = http.createServer((req, res) => {
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain');
-  res.end('Hello World!');
-});
 server.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}/`);
+  console.log(`Server running on port ${PORT}`);
 });
