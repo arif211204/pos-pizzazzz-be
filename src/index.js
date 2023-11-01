@@ -2,7 +2,7 @@ require('dotenv').config();
 const cors = require('cors');
 const express = require('express');
 const bearerToken = require('express-bearer-token');
-const mysql = require('mysql');
+const mysql = require('mysql2');
 // const http = require('http');
 
 const {
@@ -28,7 +28,13 @@ const options = {
   timeout: 10000, // 10 seconds
 };
 const connection = mysql.createConnection(options);
-connection.connect();
+connection.connect((err) => {
+  if (err) {
+    console.error('Error connecting to the database:', err);
+    return;
+  }
+  console.log('Connected to the database');
+});
 
 const app = express();
 app.use(cors());
