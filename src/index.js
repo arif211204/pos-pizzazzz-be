@@ -3,7 +3,6 @@ const cors = require('cors');
 const express = require('express');
 const bearerToken = require('express-bearer-token');
 const mysql = require('mysql2');
-// const http = require('http');
 
 const {
   userRouter,
@@ -14,7 +13,7 @@ const {
   variantController,
   transactionVariantController,
 } = require('./routes');
-// eslint-disable-next-line no-unused-vars
+
 const db = require('./models');
 
 const PORT = process.env.PORT || 2500;
@@ -26,14 +25,19 @@ const options = {
   password: process.env.MYSQL_PASSWORD,
   database: process.env.MYSQL_DATABASE,
 };
+
 const connection = mysql.createConnection(options);
-connection.connect((err) => {
-  if (err) {
+
+async function connectToDatabase() {
+  try {
+    await connection.connect();
+    console.log('Connected to the database');
+  } catch (err) {
     console.error('Error connecting to the database:', err);
-    return;
   }
-  console.log('Connected to the database');
-});
+}
+
+connectToDatabase();
 
 const app = express();
 app.use(cors());
@@ -46,12 +50,6 @@ app.use('/transactions', transactionRouter);
 app.use('/vouchers', voucherRouter);
 app.use('/variants', variantController);
 app.use('/transVariant', transactionVariantController);
-
-// const server = http.createServer(app);
-// server.listen(PORT, () => {
-//   console.log(`Server running on port ${PORT}`);
-//   db.sequelize.sync({ alter: true });
-// });
 
 app.listen(PORT, () => {
   console.log(`listen on port:${PORT}`);
