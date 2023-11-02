@@ -3,7 +3,6 @@ const cors = require('cors');
 const express = require('express');
 const bearerToken = require('express-bearer-token');
 const mysql = require('mysql2');
-const util = require('util'); // Import the 'util' module
 
 const {
   userRouter,
@@ -26,18 +25,6 @@ const options = {
   password: '-daeACE2H--hCg63H22Bg6H3AG-G44gF',
   database: 'railway',
 };
-const queryAsync = util.promisify(mysql.createPool(options).query); // Use util.promisify
-
-async function getResults() {
-  try {
-    const results = await queryAsync('SELECT * FROM users');
-    console.log(results);
-  } catch (err) {
-    console.log(err.message);
-  }
-}
-
-getResults();
 
 const connection = mysql.createConnection(options);
 
