@@ -25,7 +25,6 @@ const options = {
   user: process.env.MYSQL_USER,
   password: process.env.MYSQL_PASSWORD,
   database: process.env.MYSQL_DATABASE,
-  timeout: 10000, // 10 seconds
 };
 const connection = mysql.createConnection(options);
 connection.connect((err) => {
