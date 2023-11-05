@@ -1,3 +1,5 @@
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable no-await-in-loop */
 const sharp = require('sharp');
 const sendResponse = require('../utils/sendResponse');
 const { ResponseError } = require('../errors');
@@ -191,55 +193,59 @@ const productController = {
     }
   },
 
-  editProductById: async (req, res) => {
+  asyncEditProductById: async (req, res) => {
     try {
       await sequelize.transaction(
         {
           isolationLevel: Sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE,
         },
         async (t) => {
-          // get product image
-          if (req.file)
+          // Get product image
+          if (req.file) {
             req.body.image = await sharp(req.file.buffer).png().toBuffer();
+          }
 
-          // check if there is data to be updated
-          if (Object.keys(req.body).length === 0)
-            throw new ResponseError('no data provided', 400);
+          // Check if there is data to be updated
+          if (Object.keys(req.body).length === 0) {
+            throw new ResponseError('No data provided', 400);
+          }
 
-          // update product
+          // Update product
           const [numProductUpdated] = await Product.update(req.body, {
             where: { id: req.params.id },
-            field: ['name', 'description', 'image', 'isActive'],
+            fields: ['name', 'description', 'image', 'isActive'], // Changed 'field' to 'fields'
             transaction: t,
           });
-          if (numProductUpdated === 0)
-            throw new ResponseError('product not found', 404);
+          if (numProductUpdated === 0) {
+            throw new ResponseError('Product not found', 404);
+          }
 
-          // get product data
+          // Get product data
           const productData = await Product.findByPk(req.params.id, {
             transaction: t,
           });
 
-          // update product category
+          // Update product category
           if (req.body?.categoryId && req.body.categoryId.length > 0) {
-            // check if categoryId exist
+            // Check if categoryId exists
             const categoriesData = await Category.findAll({
               attributes: ['id'],
               where: { id: req.body.categoryId },
               transaction: t,
             });
-            if (categoriesData?.length !== req.body.categoryId.length)
-              throw new ResponseError('invalid categoryId', 400);
+            if (categoriesData.length !== req.body.categoryId.length) {
+              throw new ResponseError('Invalid categoryId', 400);
+            }
 
-            // set category for product
+            // Set categories for the product
             await productData.setCategories(req.body.categoryId, {
               transaction: t,
             });
           }
 
-          // update product variant
+          // Update product variants
           if (req.body?.variants && req.body.variants.length > 0) {
-            // get existed variants and new variants
+            // Get existing variants and new variants
             const newVariants = req.body.variants.filter(
               (variant) => !variant?.id
             );
@@ -247,15 +253,14 @@ const productController = {
               (variant) => !!variant?.id
             );
 
-            // delete existed variants in db but not exist in req.body
+            // Delete existing variants in the database but not in the request body
             const variantsData = await productData.getVariants({
               transaction: t,
             });
             const updateVariantsId = updateVariants.map(({ id }) => id);
-            // eslint-disable-next-line no-restricted-syntax
+
             for (const variantData of variantsData) {
               if (!updateVariantsId.includes(variantData.id)) {
-                // eslint-disable-next-line no-await-in-loop
                 await variantData.destroy({
                   where: { id: variantData.id },
                   transaction: t,
@@ -263,20 +268,19 @@ const productController = {
               }
             }
 
-            // update existed variants
-            // eslint-disable-next-line no-restricted-syntax
+            // Update existing variants
             for (const updateVariant of updateVariants) {
-              // eslint-disable-next-line no-await-in-loop
               const [numVariantUpdated] = await Variant.update(updateVariant, {
                 where: { id: updateVariant.id },
-                fields: ['name', 'price', 'stock'],
+                fields: ['name', 'price', 'stock'], // Changed 'field' to 'fields'
                 transaction: t,
               });
-              if (numVariantUpdated === 0)
-                throw new ResponseError('invalid variant id', 400);
+              if (numVariantUpdated === 0) {
+                throw new ResponseError('Invalid variant id', 400);
+              }
             }
 
-            // create new variant
+            // Create new variants
             const newVariantsData = await Variant.bulkCreate(newVariants, {
               fields: ['name', 'price', 'stock'],
               transaction: t,
