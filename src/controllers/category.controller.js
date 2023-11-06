@@ -10,37 +10,16 @@ const categoryController = {
       if (req.query.name)
         where.name = { [Sequelize.Op.like]: `%${req.query.name}%` };
 
-      const pagination = {};
-      if (req.query.isPaginated !== 'false') {
-        req.query.page = Math.ceil(+req.query.page) || 1;
-        req.query.perPage = Math.ceil(+req.query.perPage) || 5;
-
-        pagination.limit = req.query.perPage;
-        pagination.offset = (req.query.page - 1) * req.query.perPage;
-      }
-
-      const totalData = await Category.count({ where });
-
-      const paginationInfo = {};
-      if (req.query.isPaginated !== 'false') {
-        paginationInfo.total_page = Math.ceil(totalData / req.query.perPage);
-        paginationInfo.current_page = req.query.page;
-        paginationInfo.per_page = req.query.perPage;
-      }
-
       const categoriesData = await Category.findAll({
         where,
         attributes: { exclude: ['image'] },
         include: [{ model: Product, attributes: { exclude: ['image'] } }],
-        ...pagination,
       });
 
       sendResponse({
         res,
         statusCode: 200,
         data: categoriesData,
-        total_data: totalData,
-        ...paginationInfo,
       });
     } catch (error) {
       sendResponse({ res, error });
