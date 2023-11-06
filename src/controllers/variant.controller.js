@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 const { Variant } = require('../models');
 
 const { ResponseError } = require('../errors');
@@ -5,7 +6,22 @@ const { ResponseError } = require('../errors');
 const variantController = {
   createVariant: async (req, res) => {
     try {
-      const newVariant = await Variant.create(req.body);
+      // Check if 'productId' is provided in the request body
+      if (!req.body.productId) {
+        return res.status(400).json({
+          status: 'error',
+          message: 'productId is required for creating a Variant',
+        });
+      }
+
+      // Create a new Variant with the provided 'productId'
+      const variantData = {
+        ...req.body, // Include other variant fields
+        productId: req.body.productId, // Set the 'productId'
+      };
+      console.log('variantData in variant controller :>> ', variantData);
+      const newVariant = await Variant.create(variantData);
+
       res.status(201).json({
         status: 'success',
         data: newVariant,
@@ -17,7 +33,6 @@ const variantController = {
       });
     }
   },
-
   getAllVariants: async (req, res) => {
     try {
       const variantsData = await Variant.findAll();

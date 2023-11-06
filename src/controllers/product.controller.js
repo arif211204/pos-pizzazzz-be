@@ -1,3 +1,6 @@
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable no-plusplus */
+/* eslint-disable no-await-in-loop */
 const sharp = require('sharp');
 const sendResponse = require('../utils/sendResponse');
 const { ResponseError } = require('../errors');
@@ -138,43 +141,47 @@ const productController = {
   createProduct: async (req, res) => {
     try {
       await sequelize.transaction(async (t) => {
-        // get product image
+        // Get product image
         req.body.image = await sharp(req.file.buffer).png().toBuffer();
 
-        // create new product
+        // Create new product
         const productData = await Product.create(req.body, {
-          field: ['name', 'description', 'image', 'isActive'],
+          fields: ['name', 'description', 'image', 'isActive'],
           transaction: t,
         });
 
-        // set product category
+        // Set product category
         if (req.body?.categoryId && req.body.categoryId.length > 0) {
-          // check if categoryId exist
+          // Check if categoryId exists
           const categoriesData = await Category.findAll({
             attributes: ['id'],
             where: { id: req.body.categoryId },
             transaction: t,
           });
-          if (categoriesData?.length !== req.body.categoryId.length)
-            throw new ResponseError('invalid categoryId', 400);
 
-          // set category for new product
+          if (categoriesData?.length !== req.body.categoryId.length) {
+            throw new ResponseError('invalid categoryId', 400);
+          }
+
+          // Set category for the new product
           await productData.setCategories(req.body.categoryId, {
             transaction: t,
           });
         }
 
-        // set product variant
         if (req.body?.variants && req.body.variants.length > 0) {
-          // set variant for new product
-          const variantsData = await Variant.bulkCreate(req.body.variants, {
-            fields: ['name', 'price', 'stock'],
+          // Set the productId for each Variant before calling bulkCreate()
+          for (let i = 0; i < req.body.variants.length; i++) {
+            req.body.variants[i].productId = productData.id;
+          }
+
+          await Variant.bulkCreate(req.body.variants, {
+            fields: ['name', 'price', 'stock', 'productId'],
             transaction: t,
           });
-          await productData.setVariants(variantsData, { transaction: t });
         }
 
-        // get product data
+        // Get product data
         const result = await Product.findByPk(productData.id, {
           attributes: { exclude: ['image'] },
           include: [
@@ -190,7 +197,6 @@ const productController = {
       sendResponse({ res, error });
     }
   },
-
   editProductById: async (req, res) => {
     try {
       await sequelize.transaction(
@@ -237,7 +243,6 @@ const productController = {
             });
           }
 
-          // update product variant
           if (req.body?.variants && req.body.variants.length > 0) {
             // get existed variants and new variants
             const newVariants = req.body.variants.filter(
@@ -247,15 +252,22 @@ const productController = {
               (variant) => !!variant?.id
             );
 
+            // Set the productId for each Variant before calling update() or bulkCreate()
+            for (let i = 0; i < updateVariants.length; i++) {
+              updateVariants[i].productId = req.params.id;
+            }
+
+            for (let i = 0; i < newVariants.length; i++) {
+              newVariants[i].productId = req.params.id;
+            }
+
             // delete existed variants in db but not exist in req.body
             const variantsData = await productData.getVariants({
               transaction: t,
             });
             const updateVariantsId = updateVariants.map(({ id }) => id);
-            // eslint-disable-next-line no-restricted-syntax
             for (const variantData of variantsData) {
               if (!updateVariantsId.includes(variantData.id)) {
-                // eslint-disable-next-line no-await-in-loop
                 await variantData.destroy({
                   where: { id: variantData.id },
                   transaction: t,
@@ -264,23 +276,24 @@ const productController = {
             }
 
             // update existed variants
-            // eslint-disable-next-line no-restricted-syntax
             for (const updateVariant of updateVariants) {
-              // eslint-disable-next-line no-await-in-loop
               const [numVariantUpdated] = await Variant.update(updateVariant, {
                 where: { id: updateVariant.id },
-                fields: ['name', 'price', 'stock'],
+                fields: ['name', 'price', 'stock', 'productId'], // Include 'productId'
                 transaction: t,
               });
-              if (numVariantUpdated === 0)
+              if (numVariantUpdated === 0) {
                 throw new ResponseError('invalid variant id', 400);
+              }
             }
 
             // create new variant
             const newVariantsData = await Variant.bulkCreate(newVariants, {
-              fields: ['name', 'price', 'stock'],
+              fields: ['name', 'price', 'stock', 'productId'], // Include 'productId'
               transaction: t,
             });
+
+            // Associate the new variants with the product
             await productData.addVariants(newVariantsData, { transaction: t });
           }
 
