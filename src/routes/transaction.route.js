@@ -7,7 +7,7 @@ router.get('/', transactionController.getAllTransactions);
 // POST new transaction
 router.post(
   '/',
-  // verifyUserAuth({ isAdmin: true }),
+  verifyUserAuth({ isAdmin: true }),
   transactionValidator.createTransaction,
   transactionController.createTransaction
 );
