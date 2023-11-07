@@ -18,26 +18,13 @@ const db = require('./models');
 
 const PORT = process.env.PORT || 2500;
 
-const options = {
+const pool = mysql.createPool({
   host: process.env.MYSQL_HOST,
   port: process.env.MYSQL_PORT,
   user: process.env.MYSQL_USER,
   password: process.env.MYSQL_PASSWORD,
   database: process.env.MYSQL_DATABASE,
-};
-
-const connection = mysql.createConnection(options);
-
-async function connectToDatabase() {
-  try {
-    await connection.connect();
-    console.log('tes connect');
-  } catch (err) {
-    console.error('Error connecting to the database:', err);
-  }
-}
-
-connectToDatabase();
+});
 
 const app = express();
 app.use(cors());
@@ -52,6 +39,27 @@ app.use('/variants', variantController);
 app.use('/transVariant', transactionVariantController);
 
 app.listen(PORT, () => {
-  console.log(`listen on port:${PORT}`);
-  // db.sequelize.sync({ alter: true });
+  console.log(`Server is running on port ${PORT}`);
+});
+
+// Use a connection pool and handle errors properly
+app.use((req, res, next) => {
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error('Error getting database connection:', err);
+      return res.status(500).json({ error: 'Database connection error' });
+    }
+
+    // Attach the connection to the request for use in route handlers
+    req.dbConnection = connection;
+    next();
+  });
+});
+
+// Handle releasing the database connection after handling the request
+app.use((req, res, next) => {
+  if (req.dbConnection) {
+    req.dbConnection.release();
+  }
+  next();
 });
