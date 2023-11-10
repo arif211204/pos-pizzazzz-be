@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const verifyUserAuth = require('../middlewares/auth/verifyUserAuth');
+// const verifyUserAuth = require('../middlewares/auth/verifyUserAuth');
 const transactionValidator = require('../middlewares/validators/transaction.validator');
 const transactionController = require('../controllers/transaction.controller');
 

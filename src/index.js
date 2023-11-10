@@ -41,6 +41,7 @@ app.use('/transVariant', transactionVariantController);
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+console.log(process.version, 'version');
 
 // Use a connection pool and handle errors properly
 app.use((req, res, next) => {
