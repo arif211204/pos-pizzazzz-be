@@ -11,6 +11,15 @@
 
 ## Usage Examples
 
+### Menggunakan db.sequelize.sync({ alter: true })
+
+![Nama Gambar](https://i.ibb.co/N3YPFfp/39ee52c0-935d-490b-87b8-db5a65c11ca5.jpg)
+
+When using Sequelize to manage your database schema, you can use `db.sequelize.sync({ alter: true })`in line 44 to perform database schema synchronization in "alter" mode.
+
+**Apa itu Modus "alter"?**
+In "alter" mode, Sequelize will attempt to modify the existing database schema to match your Sequelize model definition without removing or replacing it. This means you can modify your models without worrying about losing existing data in the database.
+
 ### Admin or cashier Account Creation
 
 To Login, send a POST request to the `/api/users` endpoint with the following JSON body:
@@ -108,3 +117,5 @@ To add a new voucher, send a POST request to the `/api/vouchers` endpoint with t
   "discount": 1
 }
 ```
+
+and to manage vouchers that have been made to products, they can only be arranged in the database in the table `productvouchers`
