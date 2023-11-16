@@ -12,8 +12,11 @@
     "lint": "eslint .",
     "start": "node src/index.js"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "example",
+    "heroku"
+  ],
+  "author": "jane-doe",
   "license": "ISC",
   "dependencies": {
     "@joi/date": "^2.1.0",
