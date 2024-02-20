@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable consistent-return */
 require('dotenv').config();
 const cors = require('cors');
@@ -25,9 +24,18 @@ const {
   PORT,
 } = process.env;
 
+// eslint-disable-next-line no-unused-vars
 const db = require('./models');
 
 const port = PORT || 2700;
+
+const pool = mysql.createPool({
+  host: MYSQL_HOST,
+  port: MYSQL_PORT,
+  user: MYSQL_USER,
+  password: MYSQL_PASSWORD,
+  database: MYSQL_DATABASE,
+});
 
 const app = express();
 app.use(cors());
@@ -49,4 +57,25 @@ app.listen(port, () => {
   // db.sequelize.sync({ alter: true });
 });
 console.log(process.version, 'version');
+
 // Use a connection pool and handle errors properly
+app.use((req, res, next) => {
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error('Error getting database connection:', err);
+      return res.status(500).json({ error: 'Database connection error' });
+    }
+
+    // Attach the connection to the request for use in route handlers
+    req.dbConnection = connection;
+    next();
+  });
+});
+
+// Handle releasing the database connection after handling the request
+app.use((req, res, next) => {
+  if (req.dbConnection) {
+    req.dbConnection.release();
+  }
+  next();
+});
