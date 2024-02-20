@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable consistent-return */
 require('dotenv').config();
 const cors = require('cors');
@@ -14,27 +15,16 @@ const {
   variantController,
   transactionVariantController,
 } = require('./routes');
-
-const {
-  MYSQL_HOST,
-  MYSQL_DATABASE,
-  MYSQL_PASSWORD,
-  MYSQL_PORT,
-  MYSQL_USER,
-  PORT,
-} = process.env;
-
-// eslint-disable-next-line no-unused-vars
 const db = require('./models');
 
-const port = PORT || 2700;
+const PORT = process.env.PORT || 2500;
 
 const pool = mysql.createPool({
-  host: MYSQL_HOST,
-  port: MYSQL_PORT,
-  user: MYSQL_USER,
-  password: MYSQL_PASSWORD,
-  database: MYSQL_DATABASE,
+  host: process.env.MYSQL_HOST,
+  port: process.env.MYSQL_PORT,
+  user: process.env.MYSQL_USER,
+  password: process.env.MYSQL_PASSWORD,
+  database: process.env.MYSQL_DATABASE,
 });
 
 const app = express();
@@ -49,11 +39,12 @@ app.use('/vouchers', voucherRouter);
 app.use('/variants', variantController);
 app.use('/transVariant', transactionVariantController);
 
+
 app.get('/home', (req, res) => {
   res.status(200).json('Welcome, your app is working well');
-});
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+})
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
   // db.sequelize.sync({ alter: true });
 });
 console.log(process.version, 'version');
