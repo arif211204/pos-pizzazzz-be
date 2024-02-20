@@ -14,17 +14,17 @@ const {
   variantController,
   transactionVariantController,
 } = require('./routes');
-
+const {MYSQL_HOST,MYSQL_DATABASE,MYSQL_PASSWORD,MYSQL_PORT,MYSQL_USER,PORT} = process.env
 const db = require('./models');
 
-const PORT = process.env.PORT || 2500;
+const port = PORT || 2700;
 
 const pool = mysql.createPool({
-  host: 'roundhouse.proxy.rlwy.net',
-  port: 34177,
-  user: 'root',
-  password: 'FCabFFdfaE5edAhec3cAeBc664gHFaed',
-  database: 'railway',
+  host: MYSQL_HOST,
+  port: MYSQL_PORT,
+  user: MYSQL_USER,
+  password: MYSQL_PASSWORD,
+  database: MYSQL_DATABASE,
 });
 
 const app = express();
@@ -43,9 +43,8 @@ app.use('/transVariant', transactionVariantController);
 app.get('/home', (req, res) => {
   res.status(200).json('Welcome, your app is working well');
 })
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
   // db.sequelize.sync({ alter: true });
 });
 console.log(process.version, 'version');
