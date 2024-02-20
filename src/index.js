@@ -39,6 +39,11 @@ app.use('/vouchers', voucherRouter);
 app.use('/variants', variantController);
 app.use('/transVariant', transactionVariantController);
 
+
+app.get('/home', (req, res) => {
+  res.status(200).json('Welcome, your app is working well');
+})
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
   // db.sequelize.sync({ alter: true });
